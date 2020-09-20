@@ -66,6 +66,21 @@
             "metadata": {
                 "description": "CIDR address space for the subnet"
             }
+        },
+        "vmPrefix": {
+            "type": "string",
+            "defaultValue": "omcitavm",
+            "maxLength": 15,
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "number": {
+           "type": "int",
+           "defaultValue": 2,
+           "metadata": {
+                "description": "Number of web apps per farm"
+            }
         }
     },
     "variables": {
@@ -155,9 +170,13 @@
             }
         },
         {
+            "copy": {
+                "name": "vmcopy",
+                "count": "[parameters('number')]"
+            },
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "[parameters('vmName')]",
+            "name": "[concat(parameters('vmPrefix'), copyIndex(1))]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",

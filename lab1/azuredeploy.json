@@ -1,23 +1,51 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
-    "variables": {},
+    "parameters": {
+        "storageAccountPrefix": {
+           "type": "string",
+           "defaultValue": "omcitastore",
+           "maxLength": 11,
+           "metadata": {
+                "description": "Prefix for the Storage Account Name"
+            }
+        },
+        "accountType": {
+           "type": "string",
+           "defaultValue": "Standard_LRS",
+           "allowedValues": [
+               "Standard_LRS",
+               "Premium_LRS",
+               "Standard_RAGRS"
+           ],
+           "metadata": {
+                "description": "SKU for the storage account"
+            }
+        }
+    },
+    "variables": {
+        "storageAccount": "[toLower(concat(parameters('storageAccountPrefix'), uniqueString(resourceGroup().id)))]"
+    },
     "resources": [
         {
-            "name": "omcitastore1",
+            "name": "[variables('storageAccount')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "tags": {
-                "displayName": "omcitastore1"
+                "displayName": "[variables('storageAccount')]"
             },
             "location": "[resourceGroup().location]",
             "kind": "StorageV2",
             "sku": {
-                "name": "Premium_LRS",
+                "name": "[parameters('accountType')]",
                 "tier": "Premium"
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "storageAccount": {
+            "type": "string",
+            "value": "[variables('storageAccount')]"
+        }
+    }
 }

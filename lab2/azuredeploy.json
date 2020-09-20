@@ -21,6 +21,7 @@
                 "hostingEnvironment": ""
             },
             "location": "[resourceGroup().location]",
+            "tags": {},
             "dependsOn": [
                 "[variables('webAppPlanId')]"
             ]
@@ -30,8 +31,12 @@
             "name": "[variables('webAppPlan')]",
             "type": "Microsoft.Web/serverfarms",
             "location": "[resourceGroup().location]",
+            "kind": "",
+            "tags": {},
+            "dependsOn": [],
             "properties": {
                 "name": "[variables('webAppPlan')]",
+                "workerSize": "",
                 "workerSizeId": "0",
                 "reserved": false,
                 "numberOfWorkers": "1"

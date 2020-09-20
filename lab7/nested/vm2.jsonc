@@ -41,6 +41,13 @@
                 "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
             }
         },
+        "numberOfDataDisks": {
+           "type": "int",
+           "defaultValue": 1,
+           "metadata": {
+                "description": "Number of data disks for the virtual machine"
+            }
+        },
         "vnetName": {
             "type": "string",
             "metadata": {
@@ -83,8 +90,7 @@
         "imagePublisher": "Canonical",
         "imageOffer": "UbuntuServer",
         "storageAccountType": "Standard_LRS",
-        "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
-        "vmId": "[resourceId('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+        "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'salinuxvm')]"
     },
     "resources": [
         {
@@ -182,13 +188,19 @@
                         "version": "latest"
                     },
                     "osDisk": {
+                        "name": "[concat(parameters('vmName'), '-osDisk')]",
                         "createOption": "FromImage"
                     },
-                    "dataDisks": [
+                    "copy": [
                         {
-                            "diskSizeGB": 1023,
-                            "lun": 0,
-                            "createOption": "Empty"
+                            "name": "dataDisks",
+                            "count": "[parameters('numberofDataDisks')]",
+                            "input": {
+                                "name": "[concat(parameters('vmName'), '-dataDisk', padLeft(copyIndex('dataDisks'), 2, '0'))]",
+                                "lun": "[copyIndex('dataDisks')]",
+                                "createOption": "Empty",
+                                "diskSizeGB": 1023
+                            }
                         }
                     ]
                 },
@@ -208,10 +220,5 @@
             }
         }
     ],
-    "outputs": {
-        "osDiskId": {
-            "type": "string",
-            "value": "[reference(variables('vmId')).storageProfile.osDisk.managedDisk.id]"
-        }
-    }
+    "outputs": {}
 }
